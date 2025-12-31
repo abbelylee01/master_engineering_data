@@ -34,6 +34,12 @@ services:
 
       API_BASE_URL: ${API_BASE_URL}
       API_TOKEN: ${API_TOKEN}
+    command: >
+      start-notebook.sh
+      --ServerApp.token=''
+      --ServerApp.password=''
+      --ServerApp.allow_origin='*'
+      --ServerApp.disable_check_xsrf=True
     ports:
       - "8888:8888"
     volumes:
@@ -41,3 +47,4 @@ services:
 
 volumes:
   mysql_data:
+
