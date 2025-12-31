@@ -215,3 +215,10 @@ This project is a **prototype**, not a full production system. It focuses on ill
 ## License
 
 MIT License (or update as appropriate)
+api-to-mysql-notebook/
+├─ docker-compose.yml
+├─ Dockerfile
+├─ requirements.txt
+├─ .env.example
+└─ notebooks/
+   └─ api_to_mysql.ipynb  (you will create this from the code below)
