@@ -21,7 +21,7 @@ At a high level, this project:
 2. Connects to an **external REST API**
 3. Fetches and normalizes JSON data from the API
 4. Applies basic data quality checks
-5. Loads the data into a **MySQL database** using an idempotent (upsert) pattern
+5. Loads the data into a **MySQL database**(inside a Docker container) using an idempotent (upsert) pattern
 6. Uses **Docker Compose** so the entire stack can be started with a single command
 
 Everything (Notebook, Python dependencies, and database) runs in containers, making the setup fully reproducible and easy to migrate.
@@ -65,10 +65,10 @@ MySQL Database
 
 ```
 api-to-mysql-notebook/
-├── docker-compose.yml      # Orchestrates Jupyter + MySQL
+├── docker-compose.yml      # Orchestrates Jupyter + MySQL setup
 ├── Dockerfile              # Jupyter Notebook image
 ├── requirements.txt        # Python dependencies
-├── .env.example            # Environment variable template
+├── .env                     # Environment variable
 ├── notebooks/
 │   └── api_to_mysql.ipynb  # Main ingestion notebook
 └── README.md
@@ -99,7 +99,7 @@ cd api-to-mysql-notebook
 2. Create an environment file:
 
 ```bash
-cp .env.example .env
+cp .env.env
 ```
 
 3. Update `.env` with your settings:
@@ -112,11 +112,11 @@ MYSQL_PASSWORD=demo_pass
 MYSQL_ROOT_PASSWORD=root_pass
 
 # API
-API_BASE_URL=https://jsonplaceholder.typicode.com
-API_TOKEN=
+API_BASE_URL=https://randomuser.me/api/
+API_TOKEN= NA
 ```
 
-> The default API uses `jsonplaceholder.typicode.com` (no authentication). Replace this with your real API as needed.
+> The default API uses ``https://randomuser.me/api/`` (no authentication).
 
 ---
 
@@ -125,6 +125,7 @@ API_TOKEN=
 ```bash
 docker compose --env-file .env up --build
 ```
+
 
 This will:
 
@@ -137,6 +138,17 @@ Once running, Jupyter will output a URL with an access token in the logs:
 ```
 http://localhost:8888/?token=...
 ```
+
+To run it in the background, use:
+
+docker compose --env-file .env up --build -d
+Useful follow-ups:
+
+Check running containers: docker compose ps
+View logs when you want: docker compose logs -f
+Stop everything: docker compose down
+
+
 
 ---
 
@@ -158,6 +170,34 @@ The notebook walks through:
 Each step is intentionally explicit to make the ingestion logic easy to follow and adapt.
 
 ---
+## Accessing the database 
+
+1. From your host machine (Windows/MySQL client):
+   mysql -h 127.0.0.1 -P 3306 -u demo_user -p demo
+   (enter the MYSQL_PASSWORD from your env settings)
+
+2. From inside the running MySQL container (no local client needed):
+   docker exec -it api_mysql mysql -u demo_user -p demo
+
+   As root inside container:
+   docker exec -it api_mysql mysql -u root -p
+
+   Quick checks once connected:
+
+   SHOW DATABASES;
+   USE demo;
+    SHOW TABLES;
+
+
+### Stop the Stack
+
+```bash
+docker compose down
+```
+
+
+
+
 
 ## Design Decisions
 
@@ -212,6 +252,23 @@ This project is a **prototype**, not a full production system. It focuses on ill
 
 ---
 
+## Data Quality Best Practice
+
+* Check Shape
+* Check for null values
+* Check for duplicates
+* Check data types
+* Check for data validity
+* Completeness: required columns/fields present, not just non-null values.
+* Uniqueness rules: primary/business keys unique (beyond row-level duplicates).
+* Range & domain checks: values within allowed bounds (age, dates, enums, status codes).
+* Referential integrity: foreign keys map to valid parent records.
+* Format/standardization: consistent date formats, casing, units, phone/email patterns.
+* Freshness/timeliness: data arrived on time and covers expected time window.
+* Outlier/anomaly checks: sudden spikes/drops versus historical baseline.
+
+
+
 ## License
 
 MIT License (or update as appropriate)
@@ -219,6 +276,17 @@ api-to-mysql-notebook/
 ├─ docker-compose.yml
 ├─ Dockerfile
 ├─ requirements.txt
-├─ .env.example
+├─ .env
 └─ notebooks/
    └─ api_to_mysql.ipynb  (you will create this from the code below)
+
+
+## MISC
+
+python -m venv env
+env\Scripts\activate
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
+## STEPS
+1. notebook to read API and load data into Mysql (28/02/2026 - version 1.0)
+2. Fine tune version 1.0
