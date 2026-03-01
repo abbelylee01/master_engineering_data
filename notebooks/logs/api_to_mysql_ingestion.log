@@ -1,1 +1,9 @@
 2026-03-01 17:13:02,610 | INFO | api_to_mysql_ingestion | Configuration loaded | API_BASE_URL=https://randomuser.me | RESULTS_PER_CALL=100 | MYSQL=demo_user@db:3306/demo
+2026-03-01 17:13:13,429 | INFO | api_to_mysql_ingestion | Connected to MySQL successfully
+2026-03-01 17:13:32,408 | INFO | api_to_mysql_ingestion | Calling API | url=https://randomuser.me/api/ | params={'results': 100, 'format': 'json'}
+2026-03-01 17:13:33,560 | INFO | api_to_mysql_ingestion | API call successful | status=200 | url=https://randomuser.me/api/?results=100&format=json
+2026-03-01 17:13:33,563 | INFO | api_to_mysql_ingestion | Extracted payload from API | top_level_keys=['results', 'info']
+2026-03-01 17:14:28,525 | INFO | api_to_mysql_ingestion | Transform complete | rows_before=100 | rows_after=100 | duplicates_removed=0
+2026-03-01 17:14:34,268 | INFO | api_to_mysql_ingestion | Ensured table exists: random_users
+2026-03-01 17:14:40,566 | INFO | api_to_mysql_ingestion | Load complete | upserted_rows=100
+2026-03-01 17:14:47,583 | INFO | api_to_mysql_ingestion | Verification complete | table=random_users | row_count=200
