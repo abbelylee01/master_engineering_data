@@ -290,4 +290,4 @@ Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 ## STEPS
 1. notebook to read API and load data into Mysql (28/02/2026 - version 1.0)
 2. Fine tune version 1.0
-3. read data from database transform and push to data warehouse
+3. read data from mysql transform and push to data warehouse
